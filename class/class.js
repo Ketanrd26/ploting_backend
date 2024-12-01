@@ -6,4 +6,10 @@ class UserModel {
     }
 }
 
-export default UserModel;
+class projectModel {
+    constructor(project){
+
+    }
+}
+
+export default {UserModel,projectModel};
