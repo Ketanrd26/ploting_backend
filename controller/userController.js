@@ -1,4 +1,4 @@
-import UserModel from "../class/class.js";
+import {UserModel} from "../class/class.js";
 import { login, register } from "../service/userService.js";
 import bcrypt from "bcrypt"
 export const registeruser = async (req, res) => {
