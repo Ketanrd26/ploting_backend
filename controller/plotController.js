@@ -49,17 +49,46 @@ export const plotadd = async (req, res) => {
 
 //   getallplots
 
-export const getAllPlots = async (req,res) => {
+export const getAllPlots = async (req, res) => {
   try {
-    const [response] = await dbConnection.query(`SELECT * FROM projects AS proj INNER JOIN plots AS plo ON proj.projectId = plo.projectId`);
-res.status(201).json({
-    status:"success",
-    data:response
-})
+    const [response] = await dbConnection.query(
+      `SELECT * FROM projects AS proj INNER JOIN plots AS plo ON proj.projectId = plo.projectId`
+    );
+    res.status(201).json({
+      status: "success",
+      data: response,
+    });
   } catch (error) {
     res.status(500).json({
-        status:"error",
-        message:error.message
-    })
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+export const getPlotById = async (req, res) => {
+  try {
+    const { plotId } = req.params;
+
+    const [response] = await dbConnection.query(
+      `SELECT * FROM plots WHERE plotId = ?`,
+      [plotId]
+    );
+
+    if (!response) {
+      res.status(401).json({
+        status: "error",
+        message: "data not found",
+      });
+    }
+    res.status(201).json({
+      status: "success",
+      data: response,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      error: error.response,
+    });
   }
 };
