@@ -1,0 +1,6 @@
+HOST = localhost
+USER = root
+PASSWORD= ketan@260230
+DB_NAME= ploting_software
+PORT = 5000
+SECRET_KEY = 52148521452
