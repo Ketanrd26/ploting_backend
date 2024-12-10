@@ -26,7 +26,11 @@ export const registeruser = async (req, res) => {
             message:"something error"
         })
     }
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({
+        error:error
+    })
+  }
 };
 
 
