@@ -22,8 +22,8 @@ const plottable = `
 CREATE TABLE IF NOT EXISTS plots(
   projectId INT NOT NULL,
   plotId INT AUTO_INCREMENT PRIMARY KEY,
-  plotarea VARCHAR(400) NOT NULL,
-  plotrate INT (100) NOT NULL,
+  plotarea VARCHAR(400) NOT NULL, 
+  plotrate INT (100) NOT NULL,  
   plotamount INT (100) NOT NULL,
   plotdirection VARCHAR (400) NOT NULL,
   FOREIGN KEY (projectId) REFERENCES projects(projectId) 
