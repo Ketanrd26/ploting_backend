@@ -4,7 +4,7 @@ import { projectAdd } from "../service/projectService.js";
 
 export const add_project = async (req, res) => {
   try {
-    const { projectname, projectarea, projectlocation } = req.body;
+    const { projectname, projectarea, projectlocation, projectGatId } = req.body;
     if (!projectname || !projectarea) {
       res.status(404).json({
         status: "error",
@@ -16,6 +16,7 @@ export const add_project = async (req, res) => {
       projectname,
       projectarea,
       projectlocation,
+      projectGatId
     });
 
     const response = await projectAdd(project);

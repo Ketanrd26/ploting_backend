@@ -11,17 +11,20 @@ class ProjectModel {
     this.projectname = project.projectname;
     this.projectarea = project.projectarea;
     this.projectlocation = project.projectlocation;
+    this.projectGatId = project.projectGatId
   }
 }
 
 class PlotModel {
   constructor(plots) {
-    this.plotdirection = this.plotdirection;
+    this.plotdirection = plots.plotdirection;
     this.plotarea = plots.plotarea;
     this.plotrate = plots.plotrate;
     this.plotamount = plots.plotamount;
 
   }
 }
+
+
 
 export { UserModel, ProjectModel, PlotModel };
