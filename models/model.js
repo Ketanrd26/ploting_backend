@@ -5,7 +5,7 @@ const userTable = `CREATE TABLE IF NOT EXISTS users(
     username VARCHAR(100) NOT NULL,
     password VARCHAR(350) NOT NULL,
     role VARCHAR(45) NOT NULL
-);
+)
 `;
 
 const projectTable = `CREATE TABLE IF NOT EXISTS projects(
@@ -34,11 +34,11 @@ const customerTable = `CREATE TABLE IF NOT EXISTS customer(
   mob_Number VARCHAR(15),
   email VARCHAR(100) ,
   projectId INT NOT NULL,
+  FOREIGN KEY(projectId) REFERENCES projects(projectId),
   plotId INT NOT NULL,
   FOREIGN KEY(plotId) REFERENCES plots(plotId)
-  ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY(projectId) REFERENCES projects(projectId)
-  ON DELETE CASCADE ON UPDATE CASCADE
+
+
 )`;
 
 const paymentTable = `CREATE TABLE IF NOT EXISTS payment(
