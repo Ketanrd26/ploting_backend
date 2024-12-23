@@ -6,7 +6,7 @@ export const customerAdd = async (req, res) => {
 
   try {
 
- 
+   await dbConnection.query(`ALTER TABLE Customer ADD COLUMN currentDate VARCHAR(100)`)
 
 
 
@@ -14,10 +14,10 @@ export const customerAdd = async (req, res) => {
     connection = await dbConnection.getConnection();
     await connection.beginTransaction();
 
-
+     
 
     // Insert into customer table
-    const cusQuery = `INSERT INTO customer (cName, address, mob_Number, email,projectId, plotId) VALUES (?, ?, ?, ?,?, ?)`;
+    const cusQuery = `INSERT INTO customer (cName, address, mob_Number, email,projectId, plotId,currentDate) VALUES (?, ?, ?, ?,?, ?,?)`;
     const cusValues = [
       customer.cName,
       customer.address,
@@ -25,6 +25,7 @@ export const customerAdd = async (req, res) => {
       customer.email,
       customer.projectId,
       customer.plotId,
+      customer.currentDate,
     ];
 
     const [customerResult] = await connection.query(cusQuery, cusValues);
