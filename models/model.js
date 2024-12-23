@@ -27,19 +27,19 @@ const plottable = `CREATE TABLE IF NOT EXISTS plots(
     ON DELETE CASCADE ON UPDATE CASCADE
 )`;
 
-const customerTable = `CREATE TABLE IF NOT EXISTS customer(
+const customerTable = `CREATE TABLE IF NOT EXISTS customer (
   customerId INT AUTO_INCREMENT PRIMARY KEY,
   cName VARCHAR(400) NOT NULL,
   address VARCHAR(500),
   mob_Number VARCHAR(15),
-  email VARCHAR(100) ,
+  email VARCHAR(100),
   projectId INT NOT NULL,
-  FOREIGN KEY(projectId) REFERENCES projects(projectId),
+  FOREIGN KEY (projectId) REFERENCES projects(projectId),
   plotId INT NOT NULL,
-  FOREIGN KEY(plotId) REFERENCES plots(plotId)
-
-
+  FOREIGN KEY (plotId) REFERENCES plots(plotId) 
 )`;
+
+
 
 const paymentTable = `CREATE TABLE IF NOT EXISTS payment(
   customerId INT NOT NULL,

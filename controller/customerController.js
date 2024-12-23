@@ -5,9 +5,16 @@ export const customerAdd = async (req, res) => {
   let connection;
 
   try {
+
+ 
+
+
+
     // Get a connection from the pool
     connection = await dbConnection.getConnection();
     await connection.beginTransaction();
+
+
 
     // Insert into customer table
     const cusQuery = `INSERT INTO customer (cName, address, mob_Number, email,projectId, plotId) VALUES (?, ?, ?, ?,?, ?)`;
@@ -86,6 +93,8 @@ export const customerFetch = async (req, res) => {
           cus.email,
           cus.projectId,
           cus.plotId,
+          DATE(cus.created_at) AS created_date,
+          DATE(cus.updated_at) AS updated_date,
           pay.paymentId,
           pay.bookingAmt,
           pay.payment_type,
@@ -117,6 +126,8 @@ export const customerFetch = async (req, res) => {
           email: row.email,
           projectId: row.projectId,
           plotId: row.plotId,
+          created_at: row.created_date, // Use the correct alias
+          updated_at: row.updated_date, // Use the correct alias
           payments: [],
         };
       }
@@ -157,7 +168,6 @@ export const customerFetch = async (req, res) => {
   }
 };
 
-
 // customer fetch on Id
 
 export const customerFetchById = async (req, res) => {
@@ -175,6 +185,8 @@ export const customerFetchById = async (req, res) => {
           cus.email,
           cus.projectId,
           cus.plotId,
+           DATE(cus.created_at) AS created_date,
+  DATE(cus.updated_at) AS updated_date
           pay.paymentId,
           pay.bookingAmt,
           pay.payment_type,
@@ -205,6 +217,8 @@ export const customerFetchById = async (req, res) => {
         email: response[0].email,
         projectId: response[0].projectId,
         plotId: response[0].plotId,
+        created_at: response[0].created_date,
+        updated_at: response[0].updated_date,
         payments: response.map((row) => ({
           paymentId: row.paymentId,
           bookingAmt: row.bookingAmt,
