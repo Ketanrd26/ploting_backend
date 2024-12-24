@@ -34,6 +34,7 @@ const customerTable = `CREATE TABLE IF NOT EXISTS customer (
   mob_Number VARCHAR(15),
   email VARCHAR(100),
   projectId INT NOT NULL,
+  date VARCHAR(100) NOT NULL,
   FOREIGN KEY (projectId) REFERENCES projects(projectId),
   plotId INT NOT NULL,
   FOREIGN KEY (plotId) REFERENCES plots(plotId) 

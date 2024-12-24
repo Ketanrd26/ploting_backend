@@ -5,19 +5,12 @@ export const customerAdd = async (req, res) => {
   let connection;
 
   try {
-
-   await dbConnection.query(`ALTER TABLE Customer ADD COLUMN currentDate VARCHAR(100)`)
-
-
-
     // Get a connection from the pool
     connection = await dbConnection.getConnection();
     await connection.beginTransaction();
 
-     
-
     // Insert into customer table
-    const cusQuery = `INSERT INTO customer (cName, address, mob_Number, email,projectId, plotId,currentDate) VALUES (?, ?, ?, ?,?, ?,?)`;
+    const cusQuery = `INSERT INTO customer (cName, address, mob_Number, email,projectId, plotId,date) VALUES (?, ?, ?, ?,?, ?,?)`;
     const cusValues = [
       customer.cName,
       customer.address,
@@ -25,7 +18,7 @@ export const customerAdd = async (req, res) => {
       customer.email,
       customer.projectId,
       customer.plotId,
-      customer.currentDate,
+      customer.date,
     ];
 
     const [customerResult] = await connection.query(cusQuery, cusValues);
@@ -62,6 +55,11 @@ export const customerAdd = async (req, res) => {
     res.status(200).json({
       status: "success",
       message: "Customer added successfully",
+      data: {
+        customerId: customerResult.insertId,
+        payment: paymentResult.insertId,
+        bankdetailsId: bankDetailsResult.insertId,
+      },
     });
   } catch (error) {
     if (connection) {
@@ -94,8 +92,7 @@ export const customerFetch = async (req, res) => {
           cus.email,
           cus.projectId,
           cus.plotId,
-          DATE(cus.created_at) AS created_date,
-          DATE(cus.updated_at) AS updated_date,
+          cus.date,
           pay.paymentId,
           pay.bookingAmt,
           pay.payment_type,
@@ -127,8 +124,7 @@ export const customerFetch = async (req, res) => {
           email: row.email,
           projectId: row.projectId,
           plotId: row.plotId,
-          created_at: row.created_date, // Use the correct alias
-          updated_at: row.updated_date, // Use the correct alias
+          date: row.date,
           payments: [],
         };
       }
@@ -186,8 +182,7 @@ export const customerFetchById = async (req, res) => {
           cus.email,
           cus.projectId,
           cus.plotId,
-           DATE(cus.created_at) AS created_date,
-  DATE(cus.updated_at) AS updated_date
+          cus.date,
           pay.paymentId,
           pay.bookingAmt,
           pay.payment_type,
@@ -218,8 +213,7 @@ export const customerFetchById = async (req, res) => {
         email: response[0].email,
         projectId: response[0].projectId,
         plotId: response[0].plotId,
-        created_at: response[0].created_date,
-        updated_at: response[0].updated_date,
+        date: response[0].date,
         payments: response.map((row) => ({
           paymentId: row.paymentId,
           bookingAmt: row.bookingAmt,
