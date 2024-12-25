@@ -92,3 +92,39 @@ export const getPlotById = async (req, res) => {
     });
   }
 };
+
+export const getAvailabalePlot = async (req, res) => {
+  try {
+    const [customerplots] = await dbConnection.query(
+      `SELECT plotId FROM customer`
+    );
+    const [plots] = await dbConnection.query(`SELECT * FROM plots`);
+
+    const customerPlotIds = customerplots.map((customer) => customer.plotId);
+    const availabalePlots = plots.filter(
+      (plot) => !customerPlotIds.includes(plot.plotId)
+    );
+
+    res.status(201).json({
+      staus: "success",
+      data: availabalePlots,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+    });
+  }
+};
+
+export const allPlotsDetails = async (req, res) => {
+  try {
+    const [projects] = await dbConnection.query(`SELECT 
+    * FROM projects
+    `);
+  
+    const [plots] = await dbConnection.query(`SELECT * FROM plots`);
+
+ 
+  } catch (error) {}
+};
