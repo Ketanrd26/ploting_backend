@@ -100,13 +100,19 @@ export const customerFetch = async (req, res) => {
           bank.bankName,
           bank.cheqNum,
           bank.cheqDate,
-          bank.branchDate
+          bank.branchDate,
+          plot.plotId,
+          plot.plotarea,
+          plot.plotamount,
+          proj.projectname
       FROM 
           customer AS cus
       LEFT JOIN 
           payment AS pay ON cus.customerId = pay.customerId
       LEFT JOIN 
           bankDetails AS bank ON pay.paymentId = bank.paymentId
+          LEFT JOIN plots AS plot ON cus.plotId = plot.plotId
+          LEFT JOIN projects AS proj ON plot.projectId = proj.projectId
       `
     );
 
@@ -125,26 +131,29 @@ export const customerFetch = async (req, res) => {
           projectId: row.projectId,
           plotId: row.plotId,
           date: row.date,
+          plotdetails: row.plotId
+            ? {
+                plotId: row.plotId,
+                projectname: row.projectname,
+                plotarea: row.plotarea,
+                plotamount: row.plotamount,
+              }
+            : null,
+
           payments: [],
+          paymentTotalAmount: 0,
         };
       }
 
       // Add payment details for the customer
       if (row.paymentId) {
+        const bookingAmt = parseFloat(row.bookingAmt) || 0;
         acc[customerId].payments.push({
           paymentId: row.paymentId,
           bookingAmt: row.bookingAmt,
           payment_type: row.payment_type,
-          bankDetails: row.bankDetailsId
-            ? {
-                bankDetailsId: row.bankDetailsId,
-                bankName: row.bankName,
-                cheqNum: row.cheqNum,
-                cheqDate: row.cheqDate,
-                branchDate: row.branchDate,
-              }
-            : null,
         });
+        acc[customerId].paymentTotalAmount += bookingAmt;
       }
 
       return acc;
@@ -190,13 +199,25 @@ export const customerFetchById = async (req, res) => {
           bank.bankName,
           bank.cheqNum,
           bank.cheqDate,
-          bank.branchDate
+          bank.branchDate,
+          plot.plotId,
+          plot.plotarea,
+          plot.plotamount,
+          plot.plotdirection,
+          plot.plotrate,
+          proj.projectId,
+          proj.projectname,
+          proj.projectarea,
+          proj.projectlocation,
+          proj.projectGatId
       FROM 
           customer AS cus
       LEFT JOIN 
           payment AS pay ON cus.customerId = pay.customerId
       LEFT JOIN 
           bankDetails AS bank ON pay.paymentId = bank.paymentId
+          LEFT JOIN plots AS plot ON cus.plotId = plot.plotId
+          LEFT JOIN projects AS proj ON cus.projectId = proj.projectId
       WHERE 
           cus.customerId = ?
       `,
@@ -214,6 +235,20 @@ export const customerFetchById = async (req, res) => {
         projectId: response[0].projectId,
         plotId: response[0].plotId,
         date: response[0].date,
+        projectsDetails: {
+          projectId: response[0].projectId,
+          projectname: response[0].projectname,
+          projectarea: response[0].projectarea,
+          projectlocation: response[0].projectlocation,
+          projectGatId: response[0].projectGatId,
+        },
+        plotdetails: {
+          plotId: response[0].plotId,
+          plotarea: response[0].plotarea,
+          plotrate: response[0].plotrate,
+          plotamount: response[0].plotamount,
+          plotdirection: response[0].plotdirection,
+        },
         payments: response.map((row) => ({
           paymentId: row.paymentId,
           bookingAmt: row.bookingAmt,
@@ -296,51 +331,40 @@ export const AddPayment = async (req, res) => {
 
 export const newCustomerList = async (req, res) => {
   try {
-    const [response] = await dbConnection.query(`SELECT * FROM customer`);
+    const [response] = await dbConnection.query(` 
+      SELECT 
+          cus.customerId,
+          cus.cName,
+          cus.address,
+          cus.mob_Number,
+          cus.email,
+          cus.projectId,
+          cus.plotId,
+          cus.date,
+          pay.paymentId,
+          pay.bookingAmt,
+          pay.payment_type,
+          plot.plotId,
+          plot.projectId,
+          plot.plotarea,
+          plot.plotamount,
+          proj.projectName
+      FROM 
+          customer AS cus
+      LEFT JOIN 
+          payment AS pay ON cus.customerId = pay.customerId
+     
+          LEFT JOIN 
+          plots AS plot ON cus.plotId = plot.plotId
+          LEFT JOIN projects AS proj ON plot.projectId = proj.projectId
+    `);
 
-    const newCus = response.reverse().slice(0, 10);
+    const groupedData = response.reduce((acc, row) => {
+      const customerId = row.customerId;
 
-    if (newCus.length > 0) {
-      res.status(201).json({
-        status: "success",
-        data: newCus,
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: error,
-    });
-  }
-};
-
-export const customerFetchByProjId = async (req, res) => {
-  try {
-    const { projectId } = req.params;
-
-    const [rows] = await dbConnection.query(
-      `SELECT 
-        c.customerId, c.cName, c.address, c.mob_Number, c.email, c.projectId, c.plotId, c.date,
-        p.paymentId, p.bookingAmt, p.payment_type,
-        b.bankDetailsId, b.bankName, b.cheqNum, b.cheqDate, b.branchDate
-       FROM customer c
-       LEFT JOIN payment p ON c.customerId = p.customerId
-       LEFT JOIN bankDetails b ON p.paymentId = b.paymentId
-       WHERE c.projectId = ?`,
-      [projectId]
-    );
-
-    if (rows.length === 0) {
-      return res.status(400).json({
-        message: "No data found",
-      });
-    }
-
-
-    const customers = rows.reduce((acc, row) => {
-      let customer = acc.find(c => c.customerId === row.customerId);
-      if (!customer) {
-        customer = {
+      if (!acc[customerId]) {
+        // Create a new customer object if not already present
+        acc[customerId] = {
           customerId: row.customerId,
           cName: row.cName,
           address: row.address,
@@ -349,43 +373,153 @@ export const customerFetchByProjId = async (req, res) => {
           projectId: row.projectId,
           plotId: row.plotId,
           date: row.date,
+
+          plotDetails: row.plotId
+            ? {
+                projectName: row.projectName,
+                plotId: row.plotId,
+                plotarea: row.plotarea,
+                plotamount: row.plotamount,
+              }
+            : null,
           payments: [],
+          totalBookingAmount: 0, // Initialize the totalBookingAmount
         };
-        acc.push(customer);
       }
 
+      // Add payment details for the customer
       if (row.paymentId) {
-        let payment = customer.payments.find(p => p.paymentId === row.paymentId);
-        if (!payment) {
-          payment = {
-            paymentId: row.paymentId,
-            bookingAmt: row.bookingAmt,
-            payment_type: row.payment_type,
-            bankDetails: [],
-          };
-          customer.payments.push(payment);
-        }
+        const bookingAmt = parseFloat(row.bookingAmt) || 0; // Handle null or invalid bookingAmt
+        acc[customerId].payments.push({
+          paymentId: row.paymentId,
+          bookingAmt: row.bookingAmt,
+          payment_type: row.payment_type,
+        });
 
-        if (row.bankDetailsId) {
-          payment.bankDetails.push({
-            bankDetailsId: row.bankDetailsId,
-            bankName: row.bankName,
-            cheqNum: row.cheqNum,
-            cheqDate: row.cheqDate,
-            branchDate: row.branchDate,
-          });
-        }
+        // Add to the totalBookingAmount
+        acc[customerId].totalBookingAmount += bookingAmt;
       }
 
       return acc;
-    }, []);
+    }, {});
+
+    // Convert the grouped data to an array and get the latest 10 records
+    const customerData = Object.values(groupedData).reverse().slice(0, 10);
+
+    if (customerData.length > 0) {
+      res.status(201).json({
+        status: "success",
+        data: customerData,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: error.message || "An unexpected error occurred",
+    });
+  }
+};
+
+export const customerFetchByProjId = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    const [response] = await dbConnection.query(
+      `SELECT 
+          cus.customerId,
+          cus.cName,
+          cus.address,
+          cus.mob_Number,
+          cus.email,
+          cus.projectId,
+          cus.plotId,
+          cus.date,
+          pay.paymentId,
+          pay.bookingAmt,
+          pay.payment_type,
+          bank.bankDetailsId,
+          bank.bankName,
+          bank.cheqNum,
+          bank.cheqDate,
+          bank.branchDate,
+          plot.plotId,
+          plot.plotarea,
+          plot.plotamount,
+          plot.plotdirection,
+          plot.plotrate,
+          proj.projectId,
+          proj.projectname,
+          proj.projectarea,
+          proj.projectlocation,
+          proj.projectGatId
+      FROM 
+          customer AS cus
+      LEFT JOIN 
+          payment AS pay ON cus.customerId = pay.customerId
+      LEFT JOIN 
+          bankDetails AS bank ON pay.paymentId = bank.paymentId
+          LEFT JOIN plots AS plot ON cus.plotId = plot.plotId
+          LEFT JOIN projects AS proj ON cus.projectId = proj.projectId
+      WHERE 
+          cus.projectId = ?`,
+      [projectId]
+    );
+
+    if (response.length === 0) {
+      return res.status(400).json({
+        message: "No data found",
+      });
+    }
+    const groupedData = response.reduce((acc, row) => {
+      const customerId = row.customerId;
+
+      if (!acc[customerId]) {
+        // Create a new customer object if not already present
+        acc[customerId] = {
+          customerId: row.customerId,
+          cName: row.cName,
+          address: row.address,
+          mob_Number: row.mob_Number,
+          email: row.email,
+          projectId: row.projectId,
+          plotId: row.plotId,
+          date: row.date,
+          plotdetails: row.plotId
+            ? {
+                plotId: row.plotId,
+                projectname: row.projectname,
+                plotarea: row.plotarea,
+                plotamount: row.plotamount,
+              }
+            : null,
+
+          payments: [],
+          paymentTotalAmount: 0,
+        };
+      }
+
+      // Add payment details for the customer
+      if (row.paymentId) {
+        const bookingAmt = parseFloat(row.bookingAmt) || 0;
+        acc[customerId].payments.push({
+          paymentId: row.paymentId,
+          bookingAmt: row.bookingAmt,
+          payment_type: row.payment_type,
+        });
+        acc[customerId].paymentTotalAmount += bookingAmt;
+      }
+
+      return acc;
+    }, {});
+
+    // Convert the grouped data to an array
+    const customerData = Object.values(groupedData);
 
     res.status(200).json({
-      status: "success",
-      data: customers,
-      length: customers.length,
+      status: "success",  
+      data:customerData,
+      length: customerData.length,
     });
-
   } catch (error) {
     res.status(500).json({
       status: "error",

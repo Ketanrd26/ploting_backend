@@ -116,6 +116,30 @@ export const getAvailabalePlot = async (req, res) => {
     });
   }
 };
+export const getAvailabalePlotByprojctId = async (req, res) => {
+  try {
+    const {projectId} = req.params;
+    const [customerplots] = await dbConnection.query(
+      `SELECT plotId FROM customer WHERE projectId = ?`,[projectId]
+    );
+    const [plots] = await dbConnection.query(`SELECT * FROM plots WHERE projectId = ?`,[projectId]);
+
+    const customerPlotIds = customerplots.map((customer) => customer.plotId);
+    const availabalePlots = plots.filter(
+      (plot) => !customerPlotIds.includes(plot.plotId)
+    );
+
+    res.status(201).json({
+      staus: "success",
+      data: availabalePlots,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+    });
+  }
+};
 
 export const allPlotsDetails = async (req, res) => {
   try {
