@@ -149,3 +149,23 @@ export const allPlotsDetails = async (req, res) => {
     })
   }
 };
+
+
+export const getPlotsByProjectId = async (req,res)=>{
+  try {
+    const {projectId} = req.params;
+
+    const [response] = await dbConnection.query(`SELECT * FROM plots WHERE projectId = ?`, [projectId]);
+    res.status(201).json({
+      status:"success",
+      data:response,
+      length:response.length
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status:"error",
+      message:error
+    })
+  }
+}

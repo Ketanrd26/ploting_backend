@@ -294,24 +294,102 @@ export const AddPayment = async (req, res) => {
   }
 };
 
+export const newCustomerList = async (req, res) => {
+  try {
+    const [response] = await dbConnection.query(`SELECT * FROM customer`);
+
+    const newCus = response.reverse().slice(0, 10);
+
+    if (newCus.length > 0) {
+      res.status(201).json({
+        status: "success",
+        data: newCus,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: error,
+    });
+  }
+};
+
+export const customerFetchByProjId = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    const [rows] = await dbConnection.query(
+      `SELECT 
+        c.customerId, c.cName, c.address, c.mob_Number, c.email, c.projectId, c.plotId, c.date,
+        p.paymentId, p.bookingAmt, p.payment_type,
+        b.bankDetailsId, b.bankName, b.cheqNum, b.cheqDate, b.branchDate
+       FROM customer c
+       LEFT JOIN payment p ON c.customerId = p.customerId
+       LEFT JOIN bankDetails b ON p.paymentId = b.paymentId
+       WHERE c.projectId = ?`,
+      [projectId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(400).json({
+        message: "No data found",
+      });
+    }
 
 
-export const newCustomerList = async (req,res) =>{
-try {
-  const [response] = await dbConnection.query(`SELECT * FROM customer`);
+    const customers = rows.reduce((acc, row) => {
+      let customer = acc.find(c => c.customerId === row.customerId);
+      if (!customer) {
+        customer = {
+          customerId: row.customerId,
+          cName: row.cName,
+          address: row.address,
+          mob_Number: row.mob_Number,
+          email: row.email,
+          projectId: row.projectId,
+          plotId: row.plotId,
+          date: row.date,
+          payments: [],
+        };
+        acc.push(customer);
+      }
 
-  const newCus = response.reverse().slice(0,10);
+      if (row.paymentId) {
+        let payment = customer.payments.find(p => p.paymentId === row.paymentId);
+        if (!payment) {
+          payment = {
+            paymentId: row.paymentId,
+            bookingAmt: row.bookingAmt,
+            payment_type: row.payment_type,
+            bankDetails: [],
+          };
+          customer.payments.push(payment);
+        }
 
-if(newCus.length > 0){
-  res.status(201).json({
-    status:"success",
-    data:newCus
-  })
-}
-} catch (error) {
-  console.log(error)
- res.status(500).json({
-  message:error
- }) 
-}
-}
+        if (row.bankDetailsId) {
+          payment.bankDetails.push({
+            bankDetailsId: row.bankDetailsId,
+            bankName: row.bankName,
+            cheqNum: row.cheqNum,
+            cheqDate: row.cheqDate,
+            branchDate: row.branchDate,
+          });
+        }
+      }
+
+      return acc;
+    }, []);
+
+    res.status(200).json({
+      status: "success",
+      data: customers,
+      length: customers.length,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message || "An unexpected error occurred",
+    });
+  }
+};
