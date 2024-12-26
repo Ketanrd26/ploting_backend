@@ -122,9 +122,30 @@ export const allPlotsDetails = async (req, res) => {
     const [projects] = await dbConnection.query(`SELECT 
     * FROM projects
     `);
-  
+
     const [plots] = await dbConnection.query(`SELECT * FROM plots`);
 
- 
-  } catch (error) {}
+    const [sellPlots] = await dbConnection.query(`SELECT * FROM customer`);
+
+    const soldplots = sellPlots.map((item) => item.plotId);
+
+    const availablePlots = plots.filter(
+      (item) => !soldplots.includes(item.plotId)
+    );
+
+    res.status(201).json({
+      status: "success",
+      data: {
+        totalProject: projects.length,
+        totalPlots: plots.length,
+        sellPlots: sellPlots.length,
+        avilablePlots: availablePlots.length,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      messgae:error
+    })
+  }
 };

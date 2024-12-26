@@ -293,3 +293,25 @@ export const AddPayment = async (req, res) => {
     });
   }
 };
+
+
+
+export const newCustomerList = async (req,res) =>{
+try {
+  const [response] = await dbConnection.query(`SELECT * FROM customer`);
+
+  const newCus = response.reverse().slice(0,10);
+
+if(newCus.length > 0){
+  res.status(201).json({
+    status:"success",
+    data:newCus
+  })
+}
+} catch (error) {
+  console.log(error)
+ res.status(500).json({
+  message:error
+ }) 
+}
+}
