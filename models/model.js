@@ -57,10 +57,35 @@ bankDetailsId INT AUTO_INCREMENT PRIMARY KEY,
 bankName VARCHAR(400),
 cheqNum VARCHAR(400),
 cheqDate VARCHAR(400),
-branchDate VARCHAR(400),
+branchName VARCHAR(400),
 FOREIGN KEY (paymentId) REFERENCES payment(paymentId)
 ON DELETE CASCADE ON UPDATE CASCADE
 )`;
+
+
+const billingTable = ` CREATE TABLE IF NOT EXISTS billing (
+  billingId INT AUTO_INCREMENT PRIMARY KEY,
+  date VARCHAR(50) NOT NULL,
+  name VARCHAR(400) NOT NULL,
+  address VARCHAR(500) NOT NULL,
+  mob_number VARCHAR(20) NOT NULL,
+  email VARCHAR(200) NOT NULL,
+  projectName VARCHAR(500) NOT NULL,
+  gatNumber VARCHAR(300) NOT NULL,
+  plotNumber VARCHAR(300) NOT NULL,
+  plotarea VARCHAR(200) NOT NULL,
+  plotrate VARCHAR(200) NOT NULL,
+  total_amount VARCHAR(200) NOT NULL,
+  plot_direction VARCHAR(300) NOT NULL,
+  customer_amount VARCHAR(300) NOT NULL,
+  payment_type VARCHAR(300) NOT NULL,
+  plotPurchasedType VARCHAR(300) NOT NULL,
+  amountInWords VARCHAR(500) NOT NULL,
+  bankName VARCHAR(300) NOT NULL,
+  cheqNum VARCHAR(200) NOT NULL,
+  cheqData VARCHAR(200) NOT NULL,
+  branchName VARCHAR(500) NOT NULL
+)`
 
 const createTable = async (tablename, query) => {
   try {
@@ -79,6 +104,7 @@ const createAllTable = async () => {
     await createTable("customers", customerTable); 
     await createTable("payments", paymentTable); 
     await createTable("bankDetails", bankDetailsTable); 
+    await createTable("billing_table", billingTable); 
 
     console.log("all tabels created");
   } catch (error) {

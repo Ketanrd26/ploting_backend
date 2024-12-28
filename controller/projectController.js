@@ -4,8 +4,8 @@ import { projectAdd } from "../service/projectService.js";
 
 export const add_project = async (req, res) => {
   try {
-    const { projectname, projectarea, projectlocation, projectGatId } = req.body;
-    if (!projectname || !projectarea) {
+    const { projectname, projectarea, projectlocation, projectGatId, projectAmt } = req.body;
+    if (!projectname || !projectarea || !projectAmt) {
       res.status(404).json({
         status: "error",
         message: `${projectname || projectarea} required compulsory`,
@@ -16,7 +16,8 @@ export const add_project = async (req, res) => {
       projectname,
       projectarea,
       projectlocation,
-      projectGatId
+      projectGatId,
+      projectAmt
     });
 
     const response = await projectAdd(project);

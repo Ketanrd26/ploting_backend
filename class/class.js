@@ -11,7 +11,8 @@ class ProjectModel {
     this.projectname = project.projectname;
     this.projectarea = project.projectarea;
     this.projectlocation = project.projectlocation;
-    this.projectGatId = project.projectGatId
+    this.projectGatId = project.projectGatId;
+    this.projectAmt = project.projectAmt
   }
 }
 
