@@ -83,7 +83,7 @@ const billingTable = ` CREATE TABLE IF NOT EXISTS billing (
   amountInWords VARCHAR(500) NOT NULL,
   bankName VARCHAR(300) NOT NULL,
   cheqNum VARCHAR(200) NOT NULL,
-  cheqData VARCHAR(200) NOT NULL,
+  cheqDate VARCHAR(200) NOT NULL,
   branchName VARCHAR(500) NOT NULL
 )`
 
