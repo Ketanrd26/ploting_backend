@@ -87,6 +87,14 @@ const billingTable = ` CREATE TABLE IF NOT EXISTS billing (
   branchName VARCHAR(500) NOT NULL
 )`
 
+const expenseTable = `CREATE TABLE IF NOT EXISTS expenses (
+  id int AUTO_INCREMENT PRIMARY KEY,
+  projectId INT NOT NULL,
+  FOREIGN KEY (projectId) REFERENCES projects(projectId),
+  workDetails VARCHAR(500) NOT NULL,
+  amount VARCHAR(300) NOT NULL
+)`
+
 const createTable = async (tablename, query) => {
   try {
     await dbConnection.query(query);
@@ -105,6 +113,7 @@ const createAllTable = async () => {
     await createTable("payments", paymentTable); 
     await createTable("bankDetails", bankDetailsTable); 
     await createTable("billing_table", billingTable); 
+    await createTable("expensesTable", expenseTable); 
 
     console.log("all tabels created");
   } catch (error) {
