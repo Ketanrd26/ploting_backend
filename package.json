@@ -18,6 +18,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.5",
     "nodemon": "^3.1.7",
-    "to-words": "^4.2.0"
+    "to-words": "^4.2.0",
+    "twilio": "^5.4.0"
   }
 }

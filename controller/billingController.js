@@ -96,3 +96,22 @@ export const billingController = async (req, res) => {
     });
   }
 };
+
+export const getBillById = async (req, res) => {
+  try {
+    const { billingId } = req.params;
+    const [response] = await dbConnection.query(
+      `SELECT * FROM billing WHERE billingId=?`,
+      [billingId]
+    );
+
+    res.status(201).json({
+      status: "success",
+      response,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+    });
+  }
+}
