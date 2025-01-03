@@ -13,7 +13,8 @@ const projectTable = `CREATE TABLE IF NOT EXISTS projects(
   projectname VARCHAR(100) NOT NULL,
   projectarea VARCHAR(100) NOT NULL,
   projectlocation VARCHAR(250) NOT NULL,
-  projectGatId VARCHAR(250) NOT NULL
+  projectGatId VARCHAR(250) NOT NULL,
+  projectAmt VARCHAR(250) NOT NULL
 )`;
 
 const plottable = `CREATE TABLE IF NOT EXISTS plots(
@@ -34,6 +35,8 @@ const customerTable = `CREATE TABLE IF NOT EXISTS customer (
   mob_Number VARCHAR(15),
   email VARCHAR(100),
   projectId INT NOT NULL,
+  progress VARCHAR(100) NOT NULL,
+  plotPurchasedType VARCHAR(100) NOT NULL,
   date VARCHAR(100) NOT NULL,
   FOREIGN KEY (projectId) REFERENCES projects(projectId),
   plotId INT NOT NULL,
@@ -46,6 +49,7 @@ const paymentTable = `CREATE TABLE IF NOT EXISTS payment(
   customerId INT NOT NULL,
   paymentId INT AUTO_INCREMENT PRIMARY KEY,
   bookingAmt VARCHAR(250),
+   date VARCHAR(100) NOT NULL,
   payment_type VARCHAR(250),
   FOREIGN KEY(customerId) REFERENCES customer(customerId)
   ON DELETE CASCADE ON UPDATE CASCADE
