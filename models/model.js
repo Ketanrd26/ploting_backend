@@ -88,11 +88,25 @@ const billingTable = ` CREATE TABLE IF NOT EXISTS billing (
 )`
 
 const expenseTable = `CREATE TABLE IF NOT EXISTS expenses (
-  id int AUTO_INCREMENT PRIMARY KEY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   projectId INT NOT NULL,
   FOREIGN KEY (projectId) REFERENCES projects(projectId),
   workDetails VARCHAR(500) NOT NULL,
   amount VARCHAR(300) NOT NULL
+)`
+
+// const statementTable  = `CREATE TABLE IF NOT EXISTS statement(
+// id INT AUTO_INCREMENT PRIMARY KEY,
+
+// )`
+
+const enquiryForm = `CREATE TABLE IF NOT EXISTS enquiry (
+id INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(400) NOT NULL,
+number VARCHAR (20) NOT NULL,
+enquiry VARCHAR(500),
+feedback VARCHAR(400),
+status VARCHAR(300)
 )`
 
 const createTable = async (tablename, query) => {
@@ -114,6 +128,7 @@ const createAllTable = async () => {
     await createTable("bankDetails", bankDetailsTable); 
     await createTable("billing_table", billingTable); 
     await createTable("expensesTable", expenseTable); 
+    await createTable("enquiryTable", enquiryForm); 
 
     console.log("all tabels created");
   } catch (error) {
