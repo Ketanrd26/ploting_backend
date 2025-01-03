@@ -9,9 +9,12 @@ const dbConnection = mysql.createPool({
     password: process.env.PASSWORD,
     database: process.env.DB_NAME,
     connectionLimit: 75,
-    connectTimeout: 60000, 
-    
-  });
+    connectTimeout: 60000,
+    ssl: {
+      rejectUnauthorized: true, // or false, based on your requirements
+    },
+});
+
   
 
 
