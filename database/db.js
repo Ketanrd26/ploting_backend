@@ -17,14 +17,12 @@ const dbConnection = mysql.createPool({
 
   const checkDatabase = async () => {
     try {
-      if (dbConnection.waitingClientsCount >= 5) {
-          console.log("Too many connections. Please try again later.");
-      } else {
+    
           const connection = await dbConnection.getConnection();
           console.log("database connected successfully");
           // Perform database operations
           connection.release();
-      }
+    
     } catch (error) {
       console.log(error);
     }
