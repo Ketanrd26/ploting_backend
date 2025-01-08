@@ -19,3 +19,22 @@ export const addExpnses = async (req, res) => {
     })
   }
 };
+
+
+export const getExpense = async (req,res)=>{
+  try {
+    const [response] = await dbConnection.query(`SELECT * FROM expenses`);
+
+    
+
+    res.status(201).json({
+      status:"success",
+      response
+    })
+  } catch (error) {
+    res.status(500).json({
+      status:"error",
+      error
+    })
+  }
+}

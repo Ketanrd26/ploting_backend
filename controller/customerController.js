@@ -1,5 +1,6 @@
 import { ToWords } from "to-words";
 import { dbConnection } from "../database/db.js";
+import e from "express";
 
 export const customerAdd = async (req, res) => {
   const { customer, payment, bankDetails } = req.body;
@@ -569,3 +570,23 @@ export const customerFetchByProjId = async (req, res) => {
     });
   }
 };
+
+export const addEnquiry = async (req,res)=>{
+try {
+  const {name,number,enquiry, feedback,status} = req.body;
+
+  const [response] = await dbConnection.query(`INSERT INTO enquiry (name,number,enquiry,feedback,status) VALUES (?,?,?,?,?)`,
+    [name,number,enquiry,feedback,status]
+  );
+
+  res.status(201).json({
+    status:"success",
+    response:response.insertId
+  })
+} catch (error) {
+  res.status(500).json({
+    message:"error",
+    error
+  })
+}
+}

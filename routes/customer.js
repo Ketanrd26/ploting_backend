@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  addEnquiry,
   AddPayment,
   customerAdd,
   customerFetch,
@@ -22,4 +23,5 @@ customerRoute.post("/billing", billingController);
 customerRoute.get("/viewBill/:billingId", getBillById);
 customerRoute.get("/newCustomer", newCustomerList);
 customerRoute.get("/getCustomerByProjId/:projectId", customerFetchByProjId)
-customerRoute.post("/sendmessage", addReminder)
+customerRoute.post("/sendmessage", addReminder);
+customerRoute.post("/addEnquiry", addEnquiry);
