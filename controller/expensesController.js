@@ -9,32 +9,58 @@ export const addExpnses = async (req, res) => {
     );
 
     res.status(201).json({
-        status:"success",
-        data:response.insertId
-    })
+      status: "success",
+      data: response.insertId,
+    });
   } catch (error) {
     res.status(500).json({
-        status:"error",
-        error
-    })
+      status: "error",
+      error,
+    });
   }
 };
 
-
-export const getExpense = async (req,res)=>{
+export const getExpense = async (req, res) => {
   try {
     const [response] = await dbConnection.query(`SELECT * FROM expenses`);
 
-    
+    const totalAmount = response.reduce((acc, row) => {
+      return acc + parseFloat(row.amount);
+    }, 0);
 
     res.status(201).json({
-      status:"success",
-      response
-    })
+      status: "success",
+      response,
+      totalAmount,
+    });
   } catch (error) {
     res.status(500).json({
-      status:"error",
-      error
-    })
+      status: "error",
+      error,
+    });
   }
-}
+};
+
+export const getExpenseByProjectId = async (req, res) => {
+  try {
+    const {projectId} = req.params;
+    const [response] = await dbConnection.query(
+      `SELECT * FROM expenses WHERE projectId = ?`,
+      [projectId]
+    );
+    const totalamount = response.reduce((acc, row) => {
+      return acc + parseFloat(row.amount);
+    }, 0);
+
+    res.status(201).json({
+      status: "success",
+      response,
+      totalamount,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "error",
+      error,
+    });
+  }
+};

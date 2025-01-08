@@ -8,6 +8,8 @@ import {
 
   customerFetchByProjId,
 
+  getEnquiry,
+
   newCustomerList,
 } from "../controller/customerController.js";
 import { billingController, getBillById } from "../controller/billingController.js";
@@ -25,3 +27,4 @@ customerRoute.get("/newCustomer", newCustomerList);
 customerRoute.get("/getCustomerByProjId/:projectId", customerFetchByProjId)
 customerRoute.post("/sendmessage", addReminder);
 customerRoute.post("/addEnquiry", addEnquiry);
+customerRoute.get("/getEnquiry", getEnquiry);

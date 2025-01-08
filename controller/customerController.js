@@ -590,3 +590,20 @@ try {
   })
 }
 }
+
+
+export const getEnquiry = async (req,res)=>{
+  try{
+    const [response] = await dbConnection.query(`SELECT * FROM enquiry`);
+
+    res.status(201).json({
+      status:"success",
+      response
+    })
+  }catch(err){
+    res.status(501).json({
+      status:"error",
+      err
+    })
+  }
+}
