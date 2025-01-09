@@ -113,6 +113,11 @@ feedback VARCHAR(400),
 status VARCHAR(300)
 )`
 
+const statementTable = `CREATE TABLE IF NOT EXISTS statement(
+id INT AUTO_INCREMENT PRIMARY KEY,
+
+)`
+
 const createTable = async (tablename, query) => {
   try {
     await dbConnection.query(query);
