@@ -571,39 +571,39 @@ export const customerFetchByProjId = async (req, res) => {
   }
 };
 
-export const addEnquiry = async (req,res)=>{
-try {
-  const {name,number,enquiry, feedback,status} = req.body;
+export const addEnquiry = async (req, res) => {
+  try {
+    const { name, number, enquiry, feedback, status } = req.body;
 
-  const [response] = await dbConnection.query(`INSERT INTO enquiry (name,number,enquiry,feedback,status) VALUES (?,?,?,?,?)`,
-    [name,number,enquiry,feedback,status]
-  );
+    const [response] = await dbConnection.query(
+      `INSERT INTO enquiry (name,number,enquiry,feedback,status) VALUES (?,?,?,?,?)`,
+      [name, number, enquiry, feedback, status]
+    );
 
-  res.status(201).json({
-    status:"success",
-    response:response.insertId
-  })
-} catch (error) {
-  res.status(500).json({
-    message:"error",
-    error
-  })
-}
-}
+    res.status(201).json({
+      status: "success",
+      response: response.insertId,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "error",
+      error,
+    });
+  }
+};
 
-
-export const getEnquiry = async (req,res)=>{
-  try{
+export const getEnquiry = async (req, res) => {
+  try {
     const [response] = await dbConnection.query(`SELECT * FROM enquiry`);
 
     res.status(201).json({
-      status:"success",
-      response
-    })
-  }catch(err){
+      status: "success",
+      response,
+    });
+  } catch (err) {
     res.status(501).json({
-      status:"error",
-      err
-    })
+      status: "error",
+      err,
+    });
   }
-}
+};

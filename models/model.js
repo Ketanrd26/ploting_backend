@@ -43,14 +43,13 @@ const customerTable = `CREATE TABLE IF NOT EXISTS customer (
   FOREIGN KEY (plotId) REFERENCES plots(plotId) 
 )`;
 
-
-
 const paymentTable = `CREATE TABLE IF NOT EXISTS payment(
   customerId INT NOT NULL,
   paymentId INT AUTO_INCREMENT PRIMARY KEY,
   bookingAmt VARCHAR(250),
-   date VARCHAR(100) NOT NULL,
+  date VARCHAR(100) NOT NULL,
   payment_type VARCHAR(250),
+  amountInWords VARCHAR(45) NOT NULL,
   FOREIGN KEY(customerId) REFERENCES customer(customerId)
   ON DELETE CASCADE ON UPDATE CASCADE
 )`;
@@ -65,7 +64,6 @@ branchName VARCHAR(400),
 FOREIGN KEY (paymentId) REFERENCES payment(paymentId)
 ON DELETE CASCADE ON UPDATE CASCADE
 )`;
-
 
 const billingTable = ` CREATE TABLE IF NOT EXISTS billing (
   billingId INT AUTO_INCREMENT PRIMARY KEY,
@@ -89,7 +87,7 @@ const billingTable = ` CREATE TABLE IF NOT EXISTS billing (
   cheqNum VARCHAR(200) NOT NULL,
   cheqDate VARCHAR(200) NOT NULL,
   branchName VARCHAR(500) NOT NULL
-)`
+)`;
 
 const expenseTable = `CREATE TABLE IF NOT EXISTS expenses (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -97,7 +95,7 @@ const expenseTable = `CREATE TABLE IF NOT EXISTS expenses (
   FOREIGN KEY (projectId) REFERENCES projects(projectId),
   workDetails VARCHAR(500) NOT NULL,
   amount VARCHAR(300) NOT NULL
-)`
+)`;
 
 // const statementTable  = `CREATE TABLE IF NOT EXISTS statement(
 // id INT AUTO_INCREMENT PRIMARY KEY,
@@ -111,12 +109,12 @@ number VARCHAR (20) NOT NULL,
 enquiry VARCHAR(500),
 feedback VARCHAR(400),
 status VARCHAR(300)
-)`
+)`;
 
 const statementTable = `CREATE TABLE IF NOT EXISTS statement(
 id INT AUTO_INCREMENT PRIMARY KEY,
 
-)`
+)`;
 
 const createTable = async (tablename, query) => {
   try {
@@ -132,12 +130,12 @@ const createAllTable = async () => {
     await createTable("Users", userTable);
     await createTable("projectTable", projectTable);
     await createTable("plotstable", plottable);
-    await createTable("customers", customerTable); 
-    await createTable("payments", paymentTable); 
-    await createTable("bankDetails", bankDetailsTable); 
-    await createTable("billing_table", billingTable); 
-    await createTable("expensesTable", expenseTable); 
-    await createTable("enquiryTable", enquiryForm); 
+    await createTable("customers", customerTable);
+    await createTable("payments", paymentTable);
+    await createTable("bankDetails", bankDetailsTable);
+    await createTable("billing_table", billingTable);
+    await createTable("expensesTable", expenseTable);
+    await createTable("enquiryTable", enquiryForm);
 
     console.log("all tabels created");
   } catch (error) {
