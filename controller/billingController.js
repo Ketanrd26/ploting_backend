@@ -75,7 +75,7 @@ export const billingController = async (req, res) => {
         paymentDetails.bookingAmt,
         paymentDetails.payment_type,
         customerDetails.plotPurchasedType,
-        paymentDetails.amountInwords,
+        paymentDetails.amountInWords,
         bankDetails.bankName,
         bankDetails.cheqNum,
         bankDetails.cheqDate,
