@@ -60,6 +60,7 @@ export const customerAdd = async (req, res) => {
       bankDetails.branchName,
     ];
 
+    const statement = await connection.query(`INSERT INTO statement (paymentId) VALUES(?)`, [paymentResult.insertId])
     const [bankDetailsResult] = await connection.query(
       bankDetailsQuery,
       bankDetailsValues
@@ -321,18 +322,19 @@ export const AddPayment = async (req, res) => {
     await connection.beginTransaction();
     const toWords = new ToWords();
 
-    const amountInwords = toWords.convert(payment.amount);
-    const [paymentResponse] = await dbConnection.query(
-      "INSERT INTO payment (customerId, bookingAmt, payment_type, amountInWords) VALUES (?,?,?,?)",
+    const amountInwords = `${toWords.convert(payment.bookingAmt)} rupees only`;
+    const [paymentResponse] = await connection.query(
+      "INSERT INTO payment (customerId, bookingAmt, payment_type,date, amountInWords) VALUES (?,?,?,?,?)",
 
       [
         payment.customerId,
         payment.bookingAmt,
         payment.payment_type,
+        payment.date,
         amountInwords,
       ]
     );
-    const [bankResponse] = await dbConnection.query(
+    const [bankResponse] = await connection.query(
       "INSERT INTO bankDetails (paymentId, bankName, cheqNum,cheqDate,branchName) VALUES (?,?,?,?,?)",
 
       [
@@ -343,6 +345,9 @@ export const AddPayment = async (req, res) => {
         bankDetails.branchName,
       ]
     );
+
+
+const statement = await connection.query(`INSERT INTO statement (paymentId) VALUES (?)`,[ paymentResponse.insertId])
 
     await connection.commit();
 

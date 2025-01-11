@@ -8,6 +8,7 @@ import { projectRoutes } from "./routes/project.js";
 import { plotRoute } from "./routes/plots.js";
 import { customerRoute } from "./routes/customer.js";
 import { expensesRoute } from "./routes/expenses.js";
+import { statementRoute } from "./routes/statement.js";
 dotenv.config();
 
 const app = express();
@@ -24,7 +25,8 @@ app.use("/user", userRoute);
 app.use("/projects", projectRoutes);
 app.use("/plots",plotRoute);
 app.use("/customer",customerRoute);
-app.use("/expense", expensesRoute)
+app.use("/expense", expensesRoute);
+app.use("/statement", statementRoute)
 try {
     await checkDatabase();
     

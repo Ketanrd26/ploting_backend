@@ -1,12 +1,29 @@
 import { dbConnection } from "../database/db.js";
 
 export const addExpnses = async (req, res) => {
+  let connection;
   try {
+   
+
+    connection = await dbConnection.getConnection();
+
+    await connection.beginTransaction();
+    
+
+
+
     const { projectId, workDetails, amount } = req.body;
-    const [response] = await dbConnection.query(
+    const [response] = await connection.query(
       `INSERT INTO expenses (projectId,workDetails,amount) VALUES (?,?,?)`,
       [projectId, workDetails, amount]
     );
+
+
+    const statement = await connection.query(`INSERT INTO statement (expenseId) VALUES(?)`,[response.insertId]);
+
+
+
+    await connection.commit();
 
     res.status(201).json({
       status: "success",
