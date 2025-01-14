@@ -12,10 +12,10 @@ export const addExpnses = async (req, res) => {
 
 
 
-    const { projectId, workDetails, amount } = req.body;
+    const { projectId, workDetails, amount,date } = req.body;
     const [response] = await connection.query(
-      `INSERT INTO expenses (projectId,workDetails,amount) VALUES (?,?,?)`,
-      [projectId, workDetails, amount]
+      `INSERT INTO expenses (projectId,workDetails,amount,date) VALUES (?,?,?,?)`,
+      [projectId, workDetails, amount,date]
     );
 
 

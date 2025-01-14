@@ -95,7 +95,7 @@ const expenseTable = `CREATE TABLE IF NOT EXISTS expenses (
   FOREIGN KEY (projectId) REFERENCES projects(projectId),
   workDetails VARCHAR(500) NOT NULL,
   amount VARCHAR(300) NOT NULL,
-  date VARCHAR(300) NOT NULL
+  date VARCHAR(45) NOT NULL
 )`;
 
 
