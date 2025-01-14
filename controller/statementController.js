@@ -5,20 +5,25 @@ export const getStatement = async (req, res) => {
     // Query to join and fetch data
     const [response] = await dbConnection.query(
       `SELECT 
-        statement.id AS statementId, 
-        statement.expenseId, 
-        statement.paymentId,
-        expenses.*, 
-        payment.*, 
-        customer.cName,
-        projects.projectname
-      FROM statement 
-      LEFT JOIN expenses ON statement.expenseId = expenses.id 
-      LEFT JOIN payment ON statement.paymentId = payment.paymentId
-      LEFT JOIN customer ON payment.customerId = customer.customerId
-      LEFT JOIN projects ON expenses.projectId = projects.projectId
-      `
-      
+    statement.id AS statementId, 
+    statement.expenseId, 
+    statement.paymentId,
+    expenses.date AS expenseDate, 
+    expenses.id AS expenseId, 
+    expenses.amount AS expenseAmount, 
+    expenses.workDetails AS expenseDescription, 
+    projects.projectname AS projectName,
+    payment.date AS paymentDate, 
+    payment.paymentId AS paymentId, 
+    payment.bookingAmt AS paymentAmount, 
+    payment.payment_type AS paymentType, 
+    customer.cName AS customerName,
+    customer.plotId AS plotId
+  FROM statement 
+  LEFT JOIN expenses ON statement.expenseId = expenses.id 
+  LEFT JOIN payment ON statement.paymentId = payment.paymentId
+  LEFT JOIN customer ON payment.customerId = customer.customerId
+  LEFT JOIN projects ON expenses.projectId = projects.projectId`
     );
 
     // Process the result to group details in individual statement objects
@@ -33,22 +38,24 @@ export const getStatement = async (req, res) => {
       if (row.expenseId) {
         // Add expense details if expenseId is not null
         statement.expenseDetails = {
-          id: row.id,
-          exp_amount: row.amount,
-          description: row.workDetails,
-          date: row.date,
-          projectname: row.projectname,
+          id: row.expenseId,
+          exp_amount: row.expenseAmount,
+          description: row.expenseDescription,
+          projectname: row.projectName,
+          date: row.expenseDate,
         };
       }
+      console.log(statement.expenseDetails);
 
       if (row.paymentId) {
         // Add payment details if paymentId is not null
         statement.paymentDetails = {
           paymentId: row.paymentId,
-          pay_amount: row.bookingAmt, // Add relevant columns from payment table
-          customerName: row.cName, // From customer table
-          method: row.payment_type,
-          date: row.date, // Example column
+          pay_amount: row.paymentAmount, // Add relevant columns from payment table
+          customerName: row.customerName, // From customer table
+          method: row.paymentType,
+          date: row.paymentDate,
+          plotId: row.plotId,
         };
       }
 
