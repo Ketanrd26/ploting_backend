@@ -612,3 +612,23 @@ export const getEnquiry = async (req, res) => {
     });
   }
 };
+
+
+
+export const progressChange = async (req,res)=>{
+  try {
+    const {customerId, progress} = req.body;
+    const response =  await dbConnection.query(`UPDATE customer SET progress = ?  WHERE customerId = ?`,
+    [progress,customerId]
+    );
+
+    res.status(201).json({
+      status:"success",
+      response
+    })
+  } catch (error) {
+    res.status(500).josn({
+      message:"error"
+    })
+  }
+}

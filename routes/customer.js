@@ -11,6 +11,7 @@ import {
   getEnquiry,
 
   newCustomerList,
+  progressChange,
 } from "../controller/customerController.js";
 import { billingController, getBillById } from "../controller/billingController.js";
 import { addReminder } from "../controller/reminder.js";
@@ -28,3 +29,4 @@ customerRoute.get("/getCustomerByProjId/:projectId", customerFetchByProjId)
 customerRoute.post("/sendmessage", addReminder);
 customerRoute.post("/addEnquiry", addEnquiry);
 customerRoute.get("/getEnquiry", getEnquiry);
+customerRoute.put("/progressChange", progressChange)
