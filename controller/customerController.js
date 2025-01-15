@@ -40,10 +40,11 @@ export const customerAdd = async (req, res) => {
     const amountInWords = `${toWords.convert(numericAmount)} rupees only`;
 
     // Insert into payment table
-    const payQuery = `INSERT INTO payment (customerId, bookingAmt, payment_type, amountInWords) VALUES (?, ?, ?, ?)`;
+    const payQuery = `INSERT INTO payment (customerId, bookingAmt,date, payment_type, amountInWords) VALUES (?, ?,?, ?, ?)`;
     const payValues = [
       customerResult.insertId, // Use the customerId from the newly inserted customer
       payment.bookingAmt,
+      payment.date,
       payment.payment_type,
       amountInWords,
     ];
@@ -220,6 +221,7 @@ export const customerFetchById = async (req, res) => {
           pay.paymentId,
           pay.bookingAmt,
           pay.payment_type,
+          pay.date,
           pay.amountInwords,
           bank.bankDetailsId,
           bank.bankName,
@@ -279,6 +281,7 @@ export const customerFetchById = async (req, res) => {
         },
         payments: response.map((row) => ({
           paymentId: row.paymentId,
+          date:row.date,
           bookingAmt: row.bookingAmt,
           payment_type: row.payment_type,
           amountInwords: row.paymentInwords,
