@@ -11,7 +11,7 @@ export const addReminder = async (req, res) => {
   try {
     const { message, to } = req.body;
     const sendMessage = await client.messages.create({
-        from: '+12316748569',
+        from: '+12316748610',
         // messagingServiceSid:"VAd98afb06123b68660589b2218234dcb7",
       to: `${to}`,
       body: message,
