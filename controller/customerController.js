@@ -388,6 +388,7 @@ export const newCustomerList = async (req, res) => {
           cus.progress,
           pay.paymentId,
           pay.bookingAmt,
+          pay.date,
           pay.payment_type,
           plot.plotId,
           plot.projectId,
@@ -439,6 +440,7 @@ export const newCustomerList = async (req, res) => {
         const bookingAmt = parseFloat(row.bookingAmt) || 0; // Handle null or invalid bookingAmt
         acc[customerId].payments.push({
           paymentId: row.paymentId,
+          date:row.date,
           bookingAmt: row.bookingAmt,
           payment_type: row.payment_type,
         });
@@ -621,13 +623,13 @@ export const getEnquiry = async (req, res) => {
 export const progressChange = async (req,res)=>{
   try {
     const {customerId, progress} = req.body;
-    const response =  await dbConnection.query(`UPDATE customer SET progress = ?  WHERE customerId = ?`,
+    const [response] =  await dbConnection.query(`UPDATE customer SET progress = ?  WHERE customerId = ?`,
     [progress,customerId]
     );
 
     res.status(201).json({
       status:"success",
-      response
+      data:response[0]
     })
   } catch (error) {
     res.status(500).josn({
