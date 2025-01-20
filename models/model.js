@@ -98,7 +98,6 @@ const expenseTable = `CREATE TABLE IF NOT EXISTS expenses (
   date VARCHAR(45) NOT NULL
 )`;
 
-
 const enquiryForm = `CREATE TABLE IF NOT EXISTS enquiry (
 id INT AUTO_INCREMENT PRIMARY KEY,
 name VARCHAR(400) NOT NULL,
@@ -119,6 +118,12 @@ const statementTable = `CREATE TABLE IF NOT EXISTS statement (
   ON DELETE CASCADE ON UPDATE CASCADE
 );`;
 
+const ImageTable = `Create Table If NOT EXISTS projectImages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  projectId INT NOT NULL,
+  FOREIGN KEY (projectId) REFERENCES projects(projectId),
+  image VARCHAR(500) NOT NULL
+)`;
 
 const createTable = async (tablename, query) => {
   try {
@@ -141,6 +146,7 @@ const createAllTable = async () => {
     await createTable("expensesTable", expenseTable);
     await createTable("enquiryTable", enquiryForm);
     await createTable("statementTable", statementTable);
+    await createTable("imagesTable", ImageTable);
 
     console.log("all tabels created");
   } catch (error) {

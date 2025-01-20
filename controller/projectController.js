@@ -4,7 +4,13 @@ import { projectAdd } from "../service/projectService.js";
 
 export const add_project = async (req, res) => {
   try {
-    const { projectname, projectarea, projectlocation, projectGatId, projectAmt } = req.body;
+    const {
+      projectname,
+      projectarea,
+      projectlocation,
+      projectGatId,
+      projectAmt,
+    } = req.body;
     if (!projectname || !projectarea || !projectAmt) {
       res.status(404).json({
         status: "error",
@@ -17,7 +23,7 @@ export const add_project = async (req, res) => {
       projectarea,
       projectlocation,
       projectGatId,
-      projectAmt
+      projectAmt,
     });
 
     const response = await projectAdd(project);
@@ -75,8 +81,49 @@ export const projectById = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
-        status:"error",
-        message:error
-    })
+      status: "error",
+      message: error,
+    });
+  }
+};
+
+export const AddImage = async (req, res) => {
+  try {
+    console.log("File received:", req.file);
+    const { projectId } = req.body;
+    const image = req.file?.filename;
+    console.log(projectId);
+    const [response] = await dbConnection.query(
+      `INSERT INTO projectImages (projectId,image) VALUES (?,?)`,
+      [projectId, image]
+    );
+
+    res.status(201).json({
+      message: "success",
+      data: response.insertId,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error,
+    });
+  }
+};
+
+export const showImageByProjectId = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const [response] = await dbConnection.query(
+      `SELECT * FROM projectImages AS projimg LEFT JOIN projects AS proj ON projimg.projectId = proj.projectId WHERE proj.projectId = ?`,
+      [projectId]
+    );
+
+    res.status(201).json({
+      data: response,
+      status: "success",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: error,
+    });
   }
 };
