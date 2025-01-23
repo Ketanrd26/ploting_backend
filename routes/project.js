@@ -13,7 +13,7 @@ const multerStorage = multer.diskStorage({
 
     if (!fs.existsSync(customePath)) {
         fs.mkdirSync(customePath, { recursive: true });
-    }
+      }
     cb(null,customePath)
    },
 
