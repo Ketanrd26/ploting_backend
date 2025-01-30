@@ -4,13 +4,13 @@ import { addPlots } from "../service/plotService.js";
 
 export const plotadd = async (req, res) => {
   try {
-    const { projectId, plotarea, plotrate, plotdirection } = req.body;
+    const { projectId, plotarea, plotNumber, plotrate, plotdirection } = req.body;
 
-    if (!projectId || !plotarea || !plotrate || !plotdirection) {
+    if (!projectId || !plotarea || !plotrate || !plotNumber || !plotdirection) {
       return res.status(400).json({
         status: "error",
         message:
-          "All fields (projectId, plotarea, plotrate, plotdirection) are required.",
+          "All fields (projectId, plotarea,plotNumber, plotrate, plotdirection) are required.",
       });
     }
 
@@ -19,6 +19,7 @@ export const plotadd = async (req, res) => {
     const plot = {
       projectId,
       plotarea,
+      plotNumber,
       plotrate,
       plotamount: plotAmount,
       plotdirection,

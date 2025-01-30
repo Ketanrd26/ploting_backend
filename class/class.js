@@ -20,6 +20,7 @@ class PlotModel {
   constructor(plots) {
     this.plotdirection = plots.plotdirection;
     this.plotarea = plots.plotarea;
+    this.plotNumber = plots.plotNumber;
     this.plotrate = plots.plotrate;
     this.plotamount = plots.plotamount;
 
