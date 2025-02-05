@@ -1,18 +1,18 @@
 import { ToWords } from "to-words";
 import { dbConnection } from "../database/db.js";
-import e from "express";
 
 export const customerAdd = async (req, res) => {
   const { customer, payment, bankDetails } = req.body;
   let connection;
 
   try {
+    // await dbConnection.query(`ALTER TABLE customer ADD COLUMN emiAmt VARCHAR(200)`)
     // Get a connection from the pool
     connection = await dbConnection.getConnection();
     await connection.beginTransaction();
 
     // Insert into customer table
-    const cusQuery = `INSERT INTO customer (cName, address, mob_Number, email,projectId, plotId,date, plotPurchasedType, progress) VALUES (?, ?, ?, ?,?, ?,?,?,?)`;
+    const cusQuery = `INSERT INTO customer (cName, address, mob_Number, email,projectId, plotId,date, plotPurchasedType, progress,emiAmt,emiPeriod) VALUES (?, ?, ?, ?,?, ?,?,?,?,?,?)`;
     const cusValues = [
       customer.cName,
       customer.address,
@@ -23,6 +23,8 @@ export const customerAdd = async (req, res) => {
       customer.date,
       customer.plotPurchasedType,
       customer.progress,
+      customer.emiAmt,
+      customer.emiPeriod,
     ];
 
     const [customerResult] = await connection.query(cusQuery, cusValues);
@@ -61,7 +63,10 @@ export const customerAdd = async (req, res) => {
       bankDetails.branchName,
     ];
 
-    const statement = await connection.query(`INSERT INTO statement (paymentId) VALUES(?)`, [paymentResult.insertId])
+    const statement = await connection.query(
+      `INSERT INTO statement (paymentId) VALUES(?)`,
+      [paymentResult.insertId]
+    );
     const [bankDetailsResult] = await connection.query(
       bankDetailsQuery,
       bankDetailsValues
@@ -112,6 +117,8 @@ export const customerFetch = async (req, res) => {
           cus.projectId,
           cus.plotId,
           cus.date,
+          cus.emiAmt,
+          cus.emiPeriod,
           cus.plotPurchasedType,
           cus.progress,
           pay.paymentId,
@@ -150,6 +157,8 @@ export const customerFetch = async (req, res) => {
           cName: row.cName,
           address: row.address,
           mob_Number: row.mob_Number,
+          emiAmt: row.emiAmt,
+          emiPeriod: row.emiPeriod,
           email: row.email,
           plotPurchasedType: row.plotPurchasedType,
           progress: row.progress,
@@ -162,7 +171,7 @@ export const customerFetch = async (req, res) => {
                 projectname: row.projectname,
                 plotarea: row.plotarea,
                 plotamount: row.plotamount,
-                plotNumber :row.plotNumber
+                plotNumber: row.plotNumber,
               }
             : null,
 
@@ -287,11 +296,11 @@ export const customerFetchById = async (req, res) => {
           plotdirection: response[0].north,
           plotdirection: response[0].south,
           plotdirection: response[0].east,
-          plotdirection: response[0].west
+          plotdirection: response[0].west,
         },
         payments: response.map((row) => ({
           paymentId: row.paymentId,
-          date:row.date,
+          date: row.date,
           bookingAmt: row.bookingAmt,
           payment_type: row.payment_type,
           amountInwords: row.paymentInwords,
@@ -359,8 +368,10 @@ export const AddPayment = async (req, res) => {
       ]
     );
 
-
-const statement = await connection.query(`INSERT INTO statement (paymentId) VALUES (?)`,[ paymentResponse.insertId])
+    const statement = await connection.query(
+      `INSERT INTO statement (paymentId) VALUES (?)`,
+      [paymentResponse.insertId]
+    );
 
     await connection.commit();
 
@@ -452,7 +463,7 @@ export const newCustomerList = async (req, res) => {
         const bookingAmt = parseFloat(row.bookingAmt) || 0; // Handle null or invalid bookingAmt
         acc[customerId].payments.push({
           paymentId: row.paymentId,
-          date:row.date,
+          date: row.date,
           bookingAmt: row.bookingAmt,
           payment_type: row.payment_type,
         });
@@ -555,7 +566,7 @@ export const customerFetchByProjId = async (req, res) => {
                 projectname: row.projectname,
                 plotarea: row.plotarea,
                 plotamount: row.plotamount,
-                plotamount: row.plotNumber
+                plotamount: row.plotNumber,
               }
             : null,
 
@@ -631,22 +642,21 @@ export const getEnquiry = async (req, res) => {
   }
 };
 
-
-
-export const progressChange = async (req,res)=>{
+export const progressChange = async (req, res) => {
   try {
-    const {customerId, progress} = req.body;
-    const [response] =  await dbConnection.query(`UPDATE customer SET progress = ?  WHERE customerId = ?`,
-    [progress,customerId]
+    const { customerId, progress } = req.body;
+    const [response] = await dbConnection.query(
+      `UPDATE customer SET progress = ?  WHERE customerId = ?`,
+      [progress, customerId]
     );
 
     res.status(201).json({
-      status:"success",
-      data:response[0]
-    })
+      status: "success",
+      data: response[0],
+    });
   } catch (error) {
     res.status(500).josn({
-      message:"error"
-    })
+      message: "error",
+    });
   }
-}
+};

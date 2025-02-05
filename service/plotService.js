@@ -2,6 +2,18 @@ import { dbConnection } from "../database/db.js";
 
 export const addPlots = async (plots) => {
   try {
+
+    // await dbConnection.query(`ALTER TABLE plots ADD UNIQUE (plotNumber);`)
+    const plotNumberquery = `SELECT COUNT(*) AS count FROM plots WHERE plotNumber =?`;
+
+    const [plotNumberCheck] = await dbConnection.query(plotNumberquery,[plots.plotNumber]);
+
+    if(plotNumberCheck[0].count > 0){
+      return{
+        success:false,
+        message:"plotnumber added already"
+      }
+    }
     // SQL query to insert plot data
     const queries = `
         INSERT INTO plots (projectId, plotarea,plotNumber, plotrate, plotamount,north,south,east,west ) 
@@ -22,16 +34,9 @@ export const addPlots = async (plots) => {
     await dbConnection.query(queries, values);
 
 
-    const plotNumberquery = `SELECT COUNT(*) AS count FROM plots WHERE plotNumber =?`;
 
-    const [plotNumberCheck] = await dbConnection.query(plotNumberquery,[plots.plotNumber]);
 
-    if(plotNumberCheck.count > 0){
-      return{
-        success:false,
-        message:"plotnumber added already"
-      }
-    }
+  
 
     return {
       success: true,
