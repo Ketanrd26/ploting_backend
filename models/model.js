@@ -24,7 +24,10 @@ const plottable = `CREATE TABLE IF NOT EXISTS plots(
   plotNumber VARCHAR(400) NOT NULL, 
   plotrate INT (100) NOT NULL,  
   plotamount INT (100) NOT NULL,
-  plotdirection VARCHAR (400) NOT NULL,
+  north VARCHAR(200),
+  south VARCHAR(200),
+  east VARCHAR(200),
+  west VARCHAR(200),
   FOREIGN KEY (projectId) REFERENCES projects(projectId) 
     ON DELETE CASCADE ON UPDATE CASCADE
 )`;

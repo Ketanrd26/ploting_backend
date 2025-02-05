@@ -4,13 +4,24 @@ import { addPlots } from "../service/plotService.js";
 
 export const plotadd = async (req, res) => {
   try {
-    const { projectId, plotarea, plotNumber, plotrate, plotdirection } = req.body;
+    const {
+      projectId,
+      plotarea,
+      plotNumber,
+      plotrate,
+      north,
+      south,
+      east,
+      west,
+    } = req.body;
 
-    if (!projectId || !plotarea || !plotrate || !plotNumber || !plotdirection) {
+  
+
+    if (!projectId || !plotarea || !plotrate || !plotNumber) {
       return res.status(400).json({
         status: "error",
         message:
-          "All fields (projectId, plotarea,plotNumber, plotrate, plotdirection) are required.",
+          "All fields (projectId, plotarea,plotNumber, plotrate) are required.",
       });
     }
 
@@ -22,7 +33,10 @@ export const plotadd = async (req, res) => {
       plotNumber,
       plotrate,
       plotamount: plotAmount,
-      plotdirection,
+      north,
+      south,
+      east,
+      west,
     };
 
     const response = await addPlots(plot);
@@ -35,7 +49,7 @@ export const plotadd = async (req, res) => {
     } else {
       return res.status(400).json({
         status: "error",
-        message: "Fields are not proper. Could not add plot.",
+        message: "Fields are not proper. Could not add plot. plot number already <addedd></addedd>",
       });
     }
   } catch (error) {
@@ -119,11 +133,15 @@ export const getAvailabalePlot = async (req, res) => {
 };
 export const getAvailabalePlotByprojctId = async (req, res) => {
   try {
-    const {projectId} = req.params;
+    const { projectId } = req.params;
     const [customerplots] = await dbConnection.query(
-      `SELECT plotId FROM customer WHERE projectId = ?`,[projectId]
+      `SELECT plotId FROM customer WHERE projectId = ?`,
+      [projectId]
     );
-    const [plots] = await dbConnection.query(`SELECT * FROM plots WHERE projectId = ?`,[projectId]);
+    const [plots] = await dbConnection.query(
+      `SELECT * FROM plots WHERE projectId = ?`,
+      [projectId]
+    );
 
     const customerPlotIds = customerplots.map((customer) => customer.plotId);
     const availabalePlots = plots.filter(
@@ -170,27 +188,29 @@ export const allPlotsDetails = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      messgae:error
-    })
+      messgae: error,
+    });
   }
 };
 
-
-export const getPlotsByProjectId = async (req,res)=>{
+export const getPlotsByProjectId = async (req, res) => {
   try {
-    const {projectId} = req.params;
+    const { projectId } = req.params;
 
-    const [response] = await dbConnection.query(`SELECT * FROM plots WHERE projectId = ?`, [projectId]);
+    const [response] = await dbConnection.query(
+      `SELECT * FROM plots WHERE projectId = ?`,
+      [projectId]
+    );
     res.status(201).json({
-      status:"success",
-      data:response,
-      length:response.length
-    })
+      status: "success",
+      data: response,
+      length: response.length,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      status:"error",
-      message:error
-    })
+      status: "error",
+      message: error,
+    });
   }
-}
+};

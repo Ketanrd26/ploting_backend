@@ -126,6 +126,7 @@ export const customerFetch = async (req, res) => {
           plot.plotId,
           plot.plotarea,
           plot.plotamount,
+          plot.plotNumber,
           proj.projectname
       FROM 
           customer AS cus
@@ -161,6 +162,7 @@ export const customerFetch = async (req, res) => {
                 projectname: row.projectname,
                 plotarea: row.plotarea,
                 plotamount: row.plotamount,
+                plotNumber :row.plotNumber
               }
             : null,
 
@@ -231,7 +233,11 @@ export const customerFetchById = async (req, res) => {
           plot.plotId,
           plot.plotarea,
           plot.plotamount,
-          plot.plotdirection,
+          plot.north,
+          plot.south,
+          plot.east,
+          plot.west,
+          plot.plotNumber,
           plot.plotrate,
           proj.projectId,
           proj.projectname,
@@ -277,7 +283,11 @@ export const customerFetchById = async (req, res) => {
           plotarea: response[0].plotarea,
           plotrate: response[0].plotrate,
           plotamount: response[0].plotamount,
-          plotdirection: response[0].plotdirection,
+          plotamount: response[0].plotNumber,
+          plotdirection: response[0].north,
+          plotdirection: response[0].south,
+          plotdirection: response[0].east,
+          plotdirection: response[0].west
         },
         payments: response.map((row) => ({
           paymentId: row.paymentId,
@@ -391,6 +401,7 @@ export const newCustomerList = async (req, res) => {
           pay.date,
           pay.payment_type,
           plot.plotId,
+          plot.plotNumber,
           plot.projectId,
           plot.plotarea,
           plot.plotamount,
@@ -428,6 +439,7 @@ export const newCustomerList = async (req, res) => {
                 plotId: row.plotId,
                 plotarea: row.plotarea,
                 plotamount: row.plotamount,
+                plotamount: row.plotNumber,
               }
             : null,
           payments: [],
@@ -496,7 +508,7 @@ export const customerFetchByProjId = async (req, res) => {
           plot.plotId,
           plot.plotarea,
           plot.plotamount,
-          plot.plotdirection,
+          plot.plotNumber,
           plot.plotrate,
           proj.projectId,
           proj.projectname,
@@ -543,6 +555,7 @@ export const customerFetchByProjId = async (req, res) => {
                 projectname: row.projectname,
                 plotarea: row.plotarea,
                 plotamount: row.plotamount,
+                plotamount: row.plotNumber
               }
             : null,
 

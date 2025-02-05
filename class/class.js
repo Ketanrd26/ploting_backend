@@ -18,7 +18,10 @@ class ProjectModel {
 
 class PlotModel {
   constructor(plots) {
-    this.plotdirection = plots.plotdirection;
+    this.north = plots.plotdirection;
+    this.south = plots.plotdirection;
+    this.east = plots.plotdirection;
+    this.west = plots.plotdirection;
     this.plotarea = plots.plotarea;
     this.plotNumber = plots.plotNumber;
     this.plotrate = plots.plotrate;
