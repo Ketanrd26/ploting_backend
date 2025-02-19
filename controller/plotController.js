@@ -69,6 +69,8 @@ export const getAllPlots = async (req, res) => {
     const [response] = await dbConnection.query(
       `SELECT * FROM projects AS proj INNER JOIN plots AS plo ON proj.projectId = plo.projectId`
     );
+
+
     res.status(201).json({
       status: "success",
       data: response,
@@ -201,9 +203,15 @@ export const getPlotsByProjectId = async (req, res) => {
       `SELECT * FROM plots WHERE projectId = ?`,
       [projectId]
     );
+
+    const projectid = response[0].projectId;
+    const [projectDetails] = await dbConnection.query(`SELECT * FROM projects WHERE projectId=?`,[projectid])
     res.status(201).json({
       status: "success",
-      data: response,
+      data: {
+        plotDetails : response,
+        projectDetails:projectDetails
+      },
       length: response.length,
     });
   } catch (error) {
