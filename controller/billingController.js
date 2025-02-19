@@ -28,6 +28,8 @@ export const billingController = async (req, res) => {
     }
     const customerDetails = customerDetailsRows[0];
 
+    console.log(customerDetails, "customerdata")
+
     // Fetch payment details
     const [paymentDetailsRows] = await dbConnection.query(
       `SELECT * FROM payment WHERE paymentId = ?`,
@@ -67,7 +69,7 @@ export const billingController = async (req, res) => {
         customerDetails.email,
         customerDetails.projectname,
         customerDetails.projectGatId,
-        customerDetails.plotId,
+        customerDetails.plotNumber,
         customerDetails.plotarea,
         customerDetails.plotrate,
         customerDetails.plotamount,
