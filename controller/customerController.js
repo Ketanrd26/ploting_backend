@@ -458,7 +458,7 @@ export const newCustomerList = async (req, res) => {
                 plotId: row.plotId,
                 plotarea: row.plotarea,
                 plotamount: row.plotamount,
-                plotamount: row.plotNumber,
+                plotNumber: row.plotNumber,
               }
             : null,
           payments: [],
