@@ -296,7 +296,7 @@ export const customerFetchById = async (req, res) => {
           plotarea: response[0].plotarea,
           plotrate: response[0].plotrate,
           plotamount: response[0].plotamount,
-          plotamount: response[0].plotNumber,
+          plotNumber: response[0].plotNumber,
           plotdirection: response[0].north,
           plotdirection: response[0].south,
           plotdirection: response[0].east,
