@@ -144,6 +144,7 @@ export const getAvailabalePlotByprojctId = async (req, res) => {
       `SELECT * FROM plots WHERE projectId = ?`,
       [projectId]
     );
+    const [projectDetails] = await dbConnection.query(`SELECT * FROM projects WHERE projectId=?`,[projectId])
 
     const customerPlotIds = customerplots.map((customer) => customer.plotId);
     const availabalePlots = plots.filter(
@@ -152,7 +153,10 @@ export const getAvailabalePlotByprojctId = async (req, res) => {
 
     res.status(201).json({
       staus: "success",
-      data: availabalePlots,
+      data: {
+        availabalePlots,
+        projectDetails
+      },
     });
   } catch (error) {
     console.log(error);
@@ -232,6 +236,7 @@ export const getSellPlotsByProjectId = async (req,res)=>{
 
     const [customerResponse] = await dbConnection.query(`SELECT plotId FROM customer WHERE projectId = ?`, [projectId]);
 
+    const [projectDetails] = await dbConnection.query(`SELECT * FROM projects FROM projectId=?`, [projectId])
     const customerPlotIds = customerResponse.map((customer) => customer.plotId);
     const availablePlots = plotResponse.filter(
       (plot) =>  customerPlotIds.includes(plot.plotId)
@@ -239,7 +244,10 @@ export const getSellPlotsByProjectId = async (req,res)=>{
 
     res.status(201).json({
       staus: "success",
-      data: availablePlots,
+      data: {
+        availablePlots,
+        projectDetails
+      },
     });
   } catch (error) {
     res.status(500).json({
