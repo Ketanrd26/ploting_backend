@@ -57,8 +57,8 @@ export const billingController = async (req, res) => {
     // Insert into billing table
     const [billingResult] = await dbConnection.query(
       `INSERT INTO billing 
-      (date, name, address, mob_number, email, projectName, gatNumber, plotNumber, plotarea, plotrate, total_amount, plot_direction, customer_amount, payment_type, plotPurchasedType, amountInWords, bankName, cheqNum, cheqDate, branchName) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (date, name, address, mob_number, email, projectName, gatNumber, plotNumber, plotarea, plotrate, total_amount,north,south,east,west, customer_amount, payment_type, plotPurchasedType, amountInWords, bankName, cheqNum, cheqDate, branchName) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         customerDetails.date,
         customerDetails.cName,
@@ -71,7 +71,10 @@ export const billingController = async (req, res) => {
         customerDetails.plotarea,
         customerDetails.plotrate,
         customerDetails.plotamount,
-        customerDetails.plotdirection,
+        customerDetails.north,
+        customerDetails.south,
+        customerDetails.east,
+        customerDetails.west,
         paymentDetails.bookingAmt,
         paymentDetails.payment_type,
         customerDetails.plotPurchasedType,
