@@ -214,3 +214,28 @@ export const getPlotsByProjectId = async (req, res) => {
     });
   }
 };
+
+
+export const getSellPlotsByProjectId = async (req,res)=>{
+  try {
+    const {projectId} = req.params;
+
+    const [plotResponse] = await dbConnection.query(`SELECT * FROM plots WHERE projectId = ?`, [projectId]);
+
+    const [customerResponse] = await dbConnection.query(`SELECT plotId FROM customer WHERE projectId = ?`, [projectId]);
+
+    const customerPlotIds = customerResponse.map((customer) => customer.plotId);
+    const availablePlots = plotResponse.filter(
+      (plot) =>  customerPlotIds.includes(plot.plotId)
+    );
+
+    res.status(201).json({
+      staus: "success",
+      data: availablePlots,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message:"internal server error"
+    })
+  }
+}

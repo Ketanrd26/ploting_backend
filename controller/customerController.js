@@ -578,7 +578,7 @@ export const customerFetchByProjId = async (req, res) => {
                 projectname: row.projectname,
                 plotarea: row.plotarea,
                 plotamount: row.plotamount,
-                plotamount: row.plotNumber,
+                plotNumber: row.plotNumber,
               }
             : null,
 
