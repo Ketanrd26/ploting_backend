@@ -271,7 +271,7 @@ export const getSellPlotsByProjectId = async (req, res) => {
     res.status(200).json({
       status: "success",
       data: {
-        soldPlots, // Includes cName now
+        plotDetails, // Includes cName now
         customerPlotData, // Debugging: List of customers & their plot IDs
         projectDetails,
       },
