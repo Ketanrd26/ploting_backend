@@ -228,33 +228,61 @@ export const getPlotsByProjectId = async (req, res) => {
 };
 
 
-export const getSellPlotsByProjectId = async (req,res)=>{
+export const getSellPlotsByProjectId = async (req, res) => {
   try {
-    const {projectId} = req.params;
+    const { projectId } = req.params;
 
-    const [plotResponse] = await dbConnection.query(`SELECT * FROM plots WHERE projectId = ?`, [projectId]);
-
-    const [customerResponse] = await dbConnection.query(`SELECT plotId FROM customer WHERE projectId = ?`, [projectId]);
-
-    const [projectDetails] = await dbConnection.query(`SELECT * FROM projects WHERE projectId=?`, [projectId]);
-
-
-    const customerPlotIds = customerResponse.map((customer) => customer.plotId, customer.cName);
-    const availablePlots = plotResponse.filter(
-      (plot) =>  customerPlotIds.includes(plot.plotId)
+    // Fetch all plots for the given project
+    const [plotResponse] = await dbConnection.query(
+      `SELECT * FROM plots WHERE projectId = ?`, 
+      [projectId]
     );
 
-    res.status(201).json({
-      staus: "success",
+    // Fetch sold plot IDs and customer names
+    const [customerResponse] = await dbConnection.query(
+      `SELECT plotId, cName FROM customer WHERE projectId = ?`, 
+      [projectId]
+    );
+
+   
+    const [projectDetails] = await dbConnection.query(
+      `SELECT * FROM projects WHERE projectId = ?`, 
+      [projectId]
+    );
+
+  
+    const customerPlotData = Array.isArray(customerResponse) 
+      ? customerResponse.map((customer) => ({
+          plotId: customer.plotId,
+          cName: customer.cName,
+        }))
+      : [];
+
+    // Filter plots that are sold and attach customer name
+    const soldPlots = Array.isArray(plotResponse)
+      ? plotResponse
+          .filter((plot) => customerPlotData.some((cust) => cust.plotId === plot.plotId))
+          .map((plot) => ({
+            ...plot,
+            cName: customerPlotData.find((cust) => cust.plotId === plot.plotId)?.cName || "Unknown",
+          }))
+      : [];
+
+    res.status(200).json({
+      status: "success",
       data: {
-        availablePlots,
-        customerPlotIds,
-        projectDetails
+        soldPlots, // Includes cName now
+        customerPlotData, // Debugging: List of customers & their plot IDs
+        projectDetails,
       },
     });
+
   } catch (error) {
+    console.error("Error fetching sold plots:", error);
     res.status(500).json({
-      message:"internal server error"
-    })
+      message: "Internal server error",
+      error: error.message, // Added for debugging
+    });
   }
-}
+};
+
