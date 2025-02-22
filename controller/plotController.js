@@ -259,7 +259,7 @@ export const getSellPlotsByProjectId = async (req, res) => {
       : [];
 
     // Filter plots that are sold and attach customer name
-    const soldPlots = Array.isArray(plotResponse)
+    const plotDetails = Array.isArray(plotResponse)
       ? plotResponse
           .filter((plot) => customerPlotData.some((cust) => cust.plotId === plot.plotId))
           .map((plot) => ({
