@@ -15,13 +15,24 @@ export const plotadd = async (req, res) => {
       west,
     } = req.body;
 
-  
-
     if (!projectId || !plotarea || !plotrate || !plotNumber) {
       return res.status(400).json({
         status: "error",
         message:
-          "All fields (projectId, plotarea,plotNumber, plotrate) are required.",
+          "All fields (projectId, plotarea, plotNumber, plotrate) are required.",
+      });
+    }
+
+    // Check for existing plot with same projectId and plotNumber
+    const [existing] = await dbConnection.query(
+      `SELECT * FROM plots WHERE projectId = ? AND plotNumber = ?`,
+      [projectId, plotNumber]
+    );
+
+    if (existing.length > 0) {
+      return res.status(400).json({
+        status: "error",
+        message: `Plot number "${plotNumber}" already exists in this project.`,
       });
     }
 
@@ -41,6 +52,8 @@ export const plotadd = async (req, res) => {
 
     const response = await addPlots(plot);
 
+    console.log(response)
+
     if (response.success) {
       return res.status(201).json({
         status: "success",
@@ -49,7 +62,7 @@ export const plotadd = async (req, res) => {
     } else {
       return res.status(400).json({
         status: "error",
-        message: "Fields are not proper. Could not add plot. plot number already <addedd></addedd>",
+        message: response.error,
       });
     }
   } catch (error) {
@@ -62,6 +75,7 @@ export const plotadd = async (req, res) => {
   }
 };
 
+
 //   getallplots
 
 export const getAllPlots = async (req, res) => {
@@ -69,7 +83,6 @@ export const getAllPlots = async (req, res) => {
     const [response] = await dbConnection.query(
       `SELECT * FROM projects AS proj INNER JOIN plots AS plo ON proj.projectId = plo.projectId`
     );
-
 
     res.status(201).json({
       status: "success",
@@ -144,7 +157,10 @@ export const getAvailabalePlotByprojctId = async (req, res) => {
       `SELECT * FROM plots WHERE projectId = ?`,
       [projectId]
     );
-    const [projectDetails] = await dbConnection.query(`SELECT * FROM projects WHERE projectId=?`,[projectId])
+    const [projectDetails] = await dbConnection.query(
+      `SELECT * FROM projects WHERE projectId=?`,
+      [projectId]
+    );
 
     const customerPlotIds = customerplots.map((customer) => customer.plotId);
     const availabalePlots = plots.filter(
@@ -155,7 +171,7 @@ export const getAvailabalePlotByprojctId = async (req, res) => {
       staus: "success",
       data: {
         availabalePlots,
-        projectDetails
+        projectDetails,
       },
     });
   } catch (error) {
@@ -208,25 +224,38 @@ export const getPlotsByProjectId = async (req, res) => {
       [projectId]
     );
 
-    const projectid = response[0].projectId;
-    const [projectDetails] = await dbConnection.query(`SELECT * FROM projects WHERE projectId=?`,[projectid])
-    res.status(201).json({
+    if (response.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "No plots found for this project.",
+      });
+    }
+
+    // Fetch project details for each plot asynchronously using Promise.all
+    const projectDetails = await Promise.all(response.map(async (item) => {
+      const [project] = await dbConnection.query(
+        `SELECT * FROM projects WHERE projectId = ?`,
+        [item.projectId]
+      );
+      return project[0]; // Assuming you want to return the first project detail
+    }));
+
+    res.status(200).json({
       status: "success",
       data: {
-        plotDetails : response,
-        projectDetails:projectDetails
+        plotDetails: response,
+        projectDetails: projectDetails,
       },
       length: response.length,
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(500).json({
       status: "error",
-      message: error,
+      message: error.message,
     });
   }
 };
-
 
 export const getSellPlotsByProjectId = async (req, res) => {
   try {
@@ -234,24 +263,22 @@ export const getSellPlotsByProjectId = async (req, res) => {
 
     // Fetch all plots for the given project
     const [plotResponse] = await dbConnection.query(
-      `SELECT * FROM plots WHERE projectId = ?`, 
+      `SELECT * FROM plots WHERE projectId = ?`,
       [projectId]
     );
 
     // Fetch sold plot IDs and customer names
     const [customerResponse] = await dbConnection.query(
-      `SELECT plotId, cName FROM customer WHERE projectId = ?`, 
+      `SELECT plotId, cName FROM customer WHERE projectId = ?`,
       [projectId]
     );
 
-   
     const [projectDetails] = await dbConnection.query(
-      `SELECT * FROM projects WHERE projectId = ?`, 
+      `SELECT * FROM projects WHERE projectId = ?`,
       [projectId]
     );
 
-  
-    const customerPlotData = Array.isArray(customerResponse) 
+    const customerPlotData = Array.isArray(customerResponse)
       ? customerResponse.map((customer) => ({
           plotId: customer.plotId,
           cName: customer.cName,
@@ -261,10 +288,14 @@ export const getSellPlotsByProjectId = async (req, res) => {
     // Filter plots that are sold and attach customer name
     const plotDetails = Array.isArray(plotResponse)
       ? plotResponse
-          .filter((plot) => customerPlotData.some((cust) => cust.plotId === plot.plotId))
+          .filter((plot) =>
+            customerPlotData.some((cust) => cust.plotId === plot.plotId)
+          )
           .map((plot) => ({
             ...plot,
-            cName: customerPlotData.find((cust) => cust.plotId === plot.plotId)?.cName || "Unknown",
+            cName:
+              customerPlotData.find((cust) => cust.plotId === plot.plotId)
+                ?.cName || "Unknown",
           }))
       : [];
 
@@ -276,7 +307,6 @@ export const getSellPlotsByProjectId = async (req, res) => {
         projectDetails,
       },
     });
-
   } catch (error) {
     console.error("Error fetching sold plots:", error);
     res.status(500).json({
@@ -285,4 +315,3 @@ export const getSellPlotsByProjectId = async (req, res) => {
     });
   }
 };
-
